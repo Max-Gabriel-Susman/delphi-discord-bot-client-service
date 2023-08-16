@@ -1,0 +1,69 @@
+name: ci 
+
+on: 
+  - push
+
+#env: 
+
+jobs: 
+  cloudformation-linter:
+    runs-on: ubuntu-latest 
+    #env: 
+    steps: 
+      # it seems like we're going to eventually want to run these 
+      - name: Hello World
+        run: echo "linting cfn"
+
+      # okay, so we're going to need to determine how to get make on our builld image somehow 
+      #- name: Test
+      #  run: make test
+  
+
+  golang-linter:
+    runs-on: ubuntu-latest 
+    #env: 
+    steps: 
+      # it seems like we're going to eventually want to run these 
+      - name: Hello World
+        run: echo "linting golang"
+
+      # okay, so we're going to need to determine how to get make on our builld image somehow 
+      #- name: Test
+      #  run: make test
+
+  test: 
+    runs-on: ubuntu-latest 
+    #env: 
+    steps: 
+      # it seems like we're going to eventually want to run these 
+      - name: Hello World
+        run: echo "testing golang"
+
+      # okay, so we're going to need to determine how to get make on our builld image somehow 
+      #- name: Test
+      #  run: make test
+
+
+  build: 
+    runs-on: ubuntu-latest 
+    #env: 
+    steps: 
+      # it seems like we're going to eventually want to run these 
+      - name: Hello World
+        run: echo "hello world"
+
+      # okay, so we're going to need to determine how to get make on our builld image somehow 
+      #- name: Test
+      #  run: make test
+
+  push: 
+    runs-on: ubuntu-latest 
+    #env: 
+    steps: 
+      # it seems like we're going to eventually want to run these 
+      - name: Hello World
+        run: echo "pushing image"
+
+      # okay, so we're going to need to determine how to get make on our builld image somehow 
+      #- name: Test
+      #  run: make test
