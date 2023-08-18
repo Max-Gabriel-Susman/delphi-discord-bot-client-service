@@ -2,6 +2,10 @@ package inference
 
 import "context"
 
-func (c *TextGenerationInferenceClient) Metrics(ctx context.Context, req *Prompt) (*Inference, error) {
+type MetricsRequestResponse struct {
+	MetricsText string `json:"text"`
+}
+
+func (c *Client) Metrics(ctx context.Context) (*MetricsRequestResponse, error) {
 	return nil, nil
 }
