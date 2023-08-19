@@ -93,6 +93,8 @@ func run(ctx context.Context, _ []string) error {
 			if hasPrompt {
 				var inferenceGenerationResponse string
 				// TODO: execute inference generation on inference service
+				fmt.Println("Token Generation started") // delete
+				inferenceClient.Generate(ctx, inference.GenerateInferenceRequest{})
 				s.ChannelMessageSend(m.ChannelID, outputHeading+inferenceGenerationResponse)
 			} else {
 				s.ChannelMessageSend(m.ChannelID, emptyPromptResponse)
