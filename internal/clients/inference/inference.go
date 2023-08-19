@@ -60,6 +60,14 @@ type GeneratedInferenceResponse struct {
 	GeneratedInference string                            `json:"generated_text"`
 }
 
+func (resp *GeneratedInferenceResponse) ConcatenateTokens() string {
+	var concatenated string
+	for _, token := range resp.Details.Tokens {
+		concatenated += token.Text + " "
+	}
+	return concatenated
+}
+
 type ErrorResponse struct {
 	Error     string `json:"error"`
 	ErrorType string `json:"error_type"`

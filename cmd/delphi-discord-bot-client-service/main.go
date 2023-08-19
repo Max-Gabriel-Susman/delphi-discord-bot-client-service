@@ -39,6 +39,7 @@ const (
 	unknownHelpArgumentResponse = "unknown help argument"
 	tooManyArgumentsResponse    = "too many arguments"
 	emptyPromptResponse         = "empty prompts will not be submitted to the model"
+	invalidPromptResponse       = "invalid prompt, please use the following format: apollo prompt: \"<prompt>\""
 	commandUnvaliableResponse   = " command currently unavailable"
 )
 
@@ -74,8 +75,10 @@ func run(ctx context.Context, _ []string) error {
 		hasPrompt := false
 		sections := strings.Split(m.Content, "\"")
 		args := strings.Split(sections[0], " ")
+		var prompt string
 		if len(sections) >= 2 {
-			prompt := sections[1]
+			prompt = sections[1]
+			fmt.Println("prompt is " + prompt) // delete
 			if prompt != "" {
 				hasPrompt = true
 			}
@@ -91,13 +94,22 @@ func run(ctx context.Context, _ []string) error {
 			s.ChannelMessageSend(m.ChannelID, apolloStatusOnlineResponse)
 		} else if args[1] == promptArg {
 			if hasPrompt {
-				var inferenceGenerationResponse string
+				inferenceGenerationResponse := ""
 				// TODO: execute inference generation on inference service
 				fmt.Println("Token Generation started") // delete
-				inferenceClient.Generate(ctx, inference.GenerateInferenceRequest{})
+				resp, err := inferenceClient.Generate(ctx, inference.GenerateInferenceRequest{Inputs: prompt})
+				if err != nil {
+					fmt.Printf("error generating inference: %v", err)
+				}
+				// inferenceGenerationResponse = resp.Details.Tokens[0].Text
+				inferenceGenerationResponse = fmt.Sprintf("\"%s\"", resp.ConcatenateTokens())
 				s.ChannelMessageSend(m.ChannelID, outputHeading+inferenceGenerationResponse)
 			} else {
-				s.ChannelMessageSend(m.ChannelID, emptyPromptResponse)
+				if len(args) > 2 {
+					s.ChannelMessageSend(m.ChannelID, invalidPromptResponse)
+				} else {
+					s.ChannelMessageSend(m.ChannelID, emptyPromptResponse)
+				}
 			}
 		} else if args[1] == helpArg {
 			if len(args) == 2 {
