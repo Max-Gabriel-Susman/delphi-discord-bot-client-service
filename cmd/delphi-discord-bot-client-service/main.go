@@ -53,15 +53,16 @@ func run(ctx context.Context, _ []string) error {
 		ServiceName string `env:"SERVICE_NAME" envDefault:"delphi-discord-bot-client-service"`
 		Env         string `env:"ENV" envDefault:"local"`
 		API         struct {
-			Address string `env:"API_ADDRESS" envDefault:"http://localhost:8080"`
+			Address string `env:"API_ADDRESS" envDefault:"http://localhost:80"`
 		}
 	}
 	if err := env.Parse(&cfg); err != nil {
 		return errors.Wrap(err, "parsing configuration")
 	}
 
-	inferenceClient := inference.NewClient("inference", "http://localhost:8080")
+	inferenceClient := inference.NewClient("inference", "http://localhost:8082")
 
+	// TODO: move all this discord bot logic to a separate package
 	sess, err := discordgo.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		log.Fatal(err)
@@ -94,16 +95,14 @@ func run(ctx context.Context, _ []string) error {
 			s.ChannelMessageSend(m.ChannelID, apolloStatusOnlineResponse)
 		} else if args[1] == promptArg {
 			if hasPrompt {
-				inferenceGenerationResponse := ""
-				// TODO: execute inference generation on inference service
-				fmt.Println("Token Generation started") // delete
-				resp, err := inferenceClient.Generate(ctx, inference.GenerateInferenceRequest{Inputs: prompt})
+				promptResponse := ""
+				fmt.Println("Prompt request started") // delete
+				resp, err := inferenceClient.Prompt(ctx, inference.PromptRequest{Prompt: prompt})
 				if err != nil {
-					fmt.Printf("error generating inference: %v", err)
+					fmt.Printf("error reuesting prompt: %v", err)
 				}
-				// inferenceGenerationResponse = resp.Details.Tokens[0].Text
-				inferenceGenerationResponse = fmt.Sprintf("\"%s\"", resp.ConcatenateTokens())
-				s.ChannelMessageSend(m.ChannelID, outputHeading+inferenceGenerationResponse)
+				promptResponse = resp.Response
+				s.ChannelMessageSend(m.ChannelID, outputHeading+promptResponse)
 			} else {
 				if len(args) > 2 {
 					s.ChannelMessageSend(m.ChannelID, invalidPromptResponse)
