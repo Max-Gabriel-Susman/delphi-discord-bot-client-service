@@ -20,12 +20,14 @@ const (
 	helpArg             = "help"
 	statusArg           = "status"
 	promptArg           = "prompt:"
+	scanArg             = "scan"
 
 	apolloCommandDescription         = "Apollo is a bot for uploading, managing, and operating LLM driven applications on the delphi-inferential-cluster.\n\n"
 	usageHeading                     = "Usage:\n\n"
 	apolloHelpSubCommandUsageHeading = "Use \"apollo help <command>\" for more information about a command.\n\n"
 	additionalHelpTopicsHeading      = "Additional help topics:\n\n"
-	outputHeading                    = "output: "
+	promptResponseOutputHeading      = "Model output: "
+	scanResponseOutputHeading        = "Scan results: "
 	availableCommandsHeading         = "The commands are:\n\n"
 	availableHelpSubCommandsHeading  = "The commands are:\n\n"
 	availableHelpTopicsHeading       = "Use \"apollo help <topic>\" for more information about that topic.\n"
@@ -41,6 +43,8 @@ const (
 	emptyPromptResponse         = "empty prompts will not be submitted to the model"
 	invalidPromptResponse       = "invalid prompt, please use the following format: apollo prompt: \"<prompt>\""
 	commandUnvaliableResponse   = " command currently unavailable"
+
+	apolloScanFeedback = "Scanning..."
 )
 
 func main() {
@@ -60,7 +64,8 @@ func run(ctx context.Context, _ []string) error {
 		return errors.Wrap(err, "parsing configuration")
 	}
 
-	inferenceClient := inference.NewClient("inference", "http://localhost:8082")
+	// applicationServiceClient := application.NewClient("application", "http://localhost:8000")
+	inferentialServiceClient := inference.NewClient("application", "http://localhost:8082")
 
 	// TODO: move all this discord bot logic to a separate package
 	sess, err := discordgo.New("Bot " + os.Getenv("BOT_TOKEN"))
@@ -91,18 +96,18 @@ func run(ctx context.Context, _ []string) error {
 		if args[1] == statusArg {
 			// TODO: execute healthcheck on inference service
 			fmt.Println("Healthcheck started") // delete
-			inferenceClient.HealthCheck(ctx)
+			inferentialServiceClient.HealthCheck(ctx)
 			s.ChannelMessageSend(m.ChannelID, apolloStatusOnlineResponse)
 		} else if args[1] == promptArg {
 			if hasPrompt {
 				promptResponse := ""
 				fmt.Println("Prompt request started") // delete
-				resp, err := inferenceClient.Prompt(ctx, inference.PromptRequest{Prompt: prompt})
+				resp, err := inferentialServiceClient.Prompt(ctx, inference.PromptRequest{Prompt: prompt})
 				if err != nil {
-					fmt.Printf("error reuesting prompt: %v", err)
+					fmt.Printf("error requesting prompt: %v", err)
 				}
 				promptResponse = resp.Response
-				s.ChannelMessageSend(m.ChannelID, outputHeading+promptResponse)
+				s.ChannelMessageSend(m.ChannelID, promptResponseOutputHeading+promptResponse)
 			} else {
 				if len(args) > 2 {
 					s.ChannelMessageSend(m.ChannelID, invalidPromptResponse)
@@ -110,6 +115,16 @@ func run(ctx context.Context, _ []string) error {
 					s.ChannelMessageSend(m.ChannelID, emptyPromptResponse)
 				}
 			}
+			/* }  else if args[1] == scanArg { // TODO: reimplement scan command sans application service if giskard collaboration comes together
+			s.ChannelMessageSend(m.ChannelID, apolloScanFeedback)
+			scanResponse := ""
+			fmt.Println("Scan request started") // delete
+			resp, err := applicationServiceClient.Scan(ctx, application.ScanRequest{Request: "what the dog doin"})
+			if err != nil {
+				fmt.Printf("error scanning model: %v", err)
+			}
+			scanResponse = resp.Results
+			s.ChannelMessageSend(m.ChannelID, scanResponseOutputHeading+scanResponse+scanResponse) */
 		} else if args[1] == helpArg {
 			if len(args) == 2 {
 				helpMessage :=
