@@ -9,14 +9,15 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-
-	"google.golang.org/grpc"
+	"time"
 
 	pb "github.com/Max-Gabriel-Susman/delphi-discord-bot-client-service/inference"
 	"github.com/Max-Gabriel-Susman/delphi-discord-bot-client-service/internal/clients/inference"
 	"github.com/bwmarrin/discordgo"
 	"github.com/caarlos0/env/v6"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
