@@ -13,4 +13,10 @@ mod:
 	go mod vendor 
 
 local-start:
-	go run cmd/delphi-discord-bot-client-service/main.go
+	go run main.go
+
+build:
+	docker build --tag delphi-model-service .
+
+run: 
+	docker run delphi-model-service
