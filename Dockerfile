@@ -3,12 +3,24 @@
 # Build the application from source
 FROM golang:1.19 AS build-stage
 
+ENV GO111MODULE=on
+ENV API_ADDRESS=0.0.0.0:8082 
+ENV INFERENTIAL_DB_USER=usr 
+ENV INFERENTIAL_DB_PASSWORD=identity 
+ENV INFERENTIAL_DB_HOST=127.0.0.1 
+ENV INFERENTIAL_DB_NAME=identity 
+ENV INFERENTIAL_DB_PORT=3306 
+ENV ENABLE_MIGRATE=true 
+ENV BOT_TOKEN=MTEzNzU1MTkxMzYwMTIxMjQ5OA.G0zj61.MQLAarnh_XR64lPg8RI5fZur1JKTi2JIaqaiX4 
+
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY *.go ./
+COPY . . 
+
+RUN go mod download 
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /delphi-discord-bot-client-service
 
