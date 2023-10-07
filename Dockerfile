@@ -37,8 +37,6 @@ WORKDIR /
 
 COPY --from=build-stage /delphi-discord-bot-client-service /delphi-discord-bot-client-service
 
-EXPOSE 50051
-
 USER nonroot:nonroot
 
 ENTRYPOINT ["/delphi-discord-bot-client-service"]

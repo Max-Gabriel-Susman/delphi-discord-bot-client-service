@@ -39,8 +39,8 @@ push:
 
 
 update:
-	docker build --tag brometheus/delphi-discord-bot-client-service:v0.1.2 .
-	docker push brometheus/delphi-discord-bot-client-service:v0.1.2
+	docker build --tag brometheus/delphi-discord-bot-client-service:v0.1.3 .
+	docker push brometheus/delphi-discord-bot-client-service:v0.1.3
 
 # docker push brometheus/delphi-discord-bot-client-service:v0.1.0
 
