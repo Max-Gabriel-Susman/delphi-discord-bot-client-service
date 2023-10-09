@@ -31,7 +31,7 @@ run:
 		-e INFERENTIAL_DB_PORT=3306 \
 		-e ENABLE_MIGRATE=true \
 		-e BOT_TOKEN=MTEzNzU1MTkxMzYwMTIxMjQ5OA.GXv16P.YRelee4HmWywqcol9Rd_qG9KczGdHpKNr2KZvI \
-		brometheus/delphi-discord-bot-client-service:v0.1.2
+		brometheus/delphi-discord-bot-client-service:v0.1.5
 
 
 push: 
@@ -39,13 +39,15 @@ push:
 
 
 update:
-	docker build --tag brometheus/delphi-discord-bot-client-service:v0.1.3 .
-	docker push brometheus/delphi-discord-bot-client-service:v0.1.3
+	docker build --tag brometheus/delphi-discord-bot-client-service:v0.1.6 .
+	docker push brometheus/delphi-discord-bot-client-service:v0.1.6
 
 # docker push brometheus/delphi-discord-bot-client-service:v0.1.0
 
 # grpcurl -plaintext -v localhost:50051 list Greeter
 
 # grpcurl -plaintext -d '{"name": "prometheus"}' localhost:50051 Greeter/SayHello
+
+# grpcurl -plaintext -d '{"name": "prometheus"}' 10.100.0.2:50051 Greeter/SayHello
 
 # grpcurl -plaintext -d '{"name": "prometheus"}' localhost:50052 Greeter/SayHello

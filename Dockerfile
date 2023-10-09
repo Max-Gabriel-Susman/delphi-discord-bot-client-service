@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build the application from source
-FROM golang:1.19 AS build-stage
+FROM --platform=linux/amd64 golang:1.19 AS build-stage
 
 ENV GO111MODULE=on
 ENV API_ADDRESS=0.0.0.0:8082 
