@@ -76,6 +76,10 @@ func run(ctx context.Context, _ []string) error {
 			Host string `env:"INFRASTRUCTURE_SERVICE_HOST" envDefault:"localhost"`
 			Port string `env:"INFRASTRUCTURE_SERVICE_PORT" envDefault:"8080"`
 		}
+		InferentialService struct {
+			Host string `env:"INFERENTIAL_SERVICE_HOST" envDefault:"localhost"`
+			Port string `env:"INFERENTIAL_SERVICE_PORT" envDefault:"8082"`
+		}
 		Env string `env:"ENV" envDefault:"local"`
 		API struct {
 			Address string `env:"API_ADDRESS" envDefault:"http://localhost:80"`
