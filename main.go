@@ -30,36 +30,38 @@ var (
 )
 
 const (
-	apolloCommandPrefix = "apollo"
+	delphiCommandPrefix = "delphi"
 	helpArg             = "help"
 	statusArg           = "status"
 	promptArg           = "prompt:"
-	scanArg             = "scan"
+	startArg            = "start"
+	stopArg             = "stop"
+	restartArg          = "restart"
 
-	apolloCommandDescription         = "Apollo is a bot for uploading, managing, and operating LLM driven applications on the delphi-inferential-cluster.\n\n"
+	delphiCommandDescription         = "delphi is a bot for uploading, managing, and operating LLM driven applications on the delphi-inferential-cluster.\n\n"
 	usageHeading                     = "Usage:\n\n"
-	apolloHelpSubCommandUsageHeading = "Use \"apollo help <command>\" for more information about a command.\n\n"
+	delphiHelpSubCommandUsageHeading = "Use \"delphi help <command>\" for more information about a command.\n\n"
 	additionalHelpTopicsHeading      = "Additional help topics:\n\n"
 	promptResponseOutputHeading      = "Model output: "
-	scanResponseOutputHeading        = "Scan results: "
 	availableCommandsHeading         = "The commands are:\n\n"
 	availableHelpSubCommandsHeading  = "The commands are:\n\n"
-	availableHelpTopicsHeading       = "Use \"apollo help <topic>\" for more information about that topic.\n"
-	apolloCommandUsage               = "\t\tapollo <command> [arguments]\n\n"
+	availableHelpTopicsHeading       = "Use \"delphi help <topic>\" for more information about that topic.\n"
+	delphiCommandUsage               = "\t\tdelphi <command> [arguments]\n\n"
 	promptSubCommandDescription      = "\t\tprompt: submits a prompt to the delphi-inferential-cluster\n"
 	helpSubCommandDescription        = "\t\thelp: prints this message\n"
 	statusSubCommandDescription      = "\t\tstatus: prints the status of the bot\n"
 
-	apolloStatusOnlineResponse  = "Apollo online"
-	unknownSubCommandResponse   = "unknown sub command"
-	rawPromptResponse           = "raw prompt response"
-	unknownHelpArgumentResponse = "unknown help argument"
-	tooManyArgumentsResponse    = "too many arguments"
-	emptyPromptResponse         = "empty prompts will not be submitted to the model"
-	invalidPromptResponse       = "invalid prompt, please use the following format: apollo prompt: \"<prompt>\""
-	commandUnvaliableResponse   = " command currently unavailable"
-
-	apolloScanFeedback = "Scanning..."
+	delphiStartingClusterResponse   = "Starting delphi cluster"
+	delphiStoppingClusterResponse   = "Stopping delphi cluster"
+	delphiRestartingClusterResponse = "Restarting delphi cluster"
+	delphiStatusOnlineResponse      = "delphi online"
+	unknownSubCommandResponse       = "unknown sub command"
+	rawPromptResponse               = "raw prompt response"
+	unknownHelpArgumentResponse     = "unknown help argument"
+	tooManyArgumentsResponse        = "too many arguments"
+	emptyPromptResponse             = "empty prompts will not be submitted to the model"
+	invalidPromptResponse           = "invalid prompt, please use the following format: delphi prompt: \"<prompt>\""
+	commandUnvaliableResponse       = " command currently unavailable"
 )
 
 func main() {
@@ -69,9 +71,13 @@ func main() {
 
 func run(ctx context.Context, _ []string) error {
 	var cfg struct {
-		ServiceName string `env:"SERVICE_NAME" envDefault:"delphi-discord-bot-client-service"`
-		Env         string `env:"ENV" envDefault:"local"`
-		API         struct {
+		ServiceName           string `env:"SERVICE_NAME" envDefault:"delphi-discord-bot-client-service"`
+		InfrastructureService struct {
+			Host string `env:"INFRASTRUCTURE_SERVICE_HOST" envDefault:"localhost"`
+			Port string `env:"INFRASTRUCTURE_SERVICE_PORT" envDefault:"8080"`
+		}
+		Env string `env:"ENV" envDefault:"local"`
+		API struct {
 			Address string `env:"API_ADDRESS" envDefault:"http://localhost:80"`
 		}
 	}
@@ -104,7 +110,7 @@ func run(ctx context.Context, _ []string) error {
 				hasPrompt = true
 			}
 		}
-		if args[0] != apolloCommandPrefix {
+		if args[0] != delphiCommandPrefix {
 			conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				log.Fatalf("did not connect: %v", err)
@@ -126,7 +132,7 @@ func run(ctx context.Context, _ []string) error {
 				// TODO: execute healthcheck on inference service
 				fmt.Println("Healthcheck started") // delete
 				inferentialServiceClient.HealthCheck(ctx)
-				s.ChannelMessageSend(m.ChannelID, apolloStatusOnlineResponse)
+				s.ChannelMessageSend(m.ChannelID, delphiStatusOnlineResponse)
 			} else if args[1] == promptArg {
 				if hasPrompt {
 					promptResponse := ""
@@ -144,23 +150,29 @@ func run(ctx context.Context, _ []string) error {
 						s.ChannelMessageSend(m.ChannelID, emptyPromptResponse)
 					}
 				}
-				/* }  else if args[1] == scanArg { // TODO: reimplement scan command sans application service if giskard collaboration comes together
-				s.ChannelMessageSend(m.ChannelID, apolloScanFeedback)
-				scanResponse := ""
-				fmt.Println("Scan request started") // delete
-				resp, err := applicationServiceClient.Scan(ctx, application.ScanRequest{Request: "what the dog doin"})
-				if err != nil {
-					fmt.Printf("error scanning model: %v", err)
-				}
-				scanResponse = resp.Results
-				s.ChannelMessageSend(m.ChannelID, scanResponseOutputHeading+scanResponse+scanResponse) */
+			} else if args[1] == startArg {
+				// check user priveleges maybe l8r idk
+				fmt.Println("Initializing Delphi cluster") // delete
+				s.ChannelMessageSend(m.ChannelID, delphiStartingClusterResponse)
+
+				// request deploy from monitoring svc(needs new name) monitoring, meta, administrative, infrastructure
+				// let's do ifrastructure svc
+
+				// process reponse
+
+			} else if args[1] == stopArg {
+				fmt.Println("Stopping Delphi cluster") // delete
+				s.ChannelMessageSend(m.ChannelID, delphiStoppingClusterResponse)
+			} else if args[1] == restartArg {
+				fmt.Println("Initializing Delphi cluster") // delete
+				s.ChannelMessageSend(m.ChannelID, delphiRestartingClusterResponse)
 			} else if args[1] == helpArg {
 				if len(args) == 2 {
 					helpMessage :=
-						apolloCommandDescription +
+						delphiCommandDescription +
 							usageHeading +
-							apolloCommandUsage +
-							apolloHelpSubCommandUsageHeading +
+							delphiCommandUsage +
+							delphiHelpSubCommandUsageHeading +
 							promptSubCommandDescription +
 							helpSubCommandDescription +
 							additionalHelpTopicsHeading +
@@ -169,7 +181,7 @@ func run(ctx context.Context, _ []string) error {
 				} else if len(args) == 3 {
 					switch args[2] {
 					case helpArg:
-						s.ChannelMessageSend(m.ChannelID, apolloHelpSubCommandUsageHeading)
+						s.ChannelMessageSend(m.ChannelID, delphiHelpSubCommandUsageHeading)
 					case statusArg:
 						s.ChannelMessageSend(m.ChannelID, statusSubCommandDescription)
 					case promptArg:
@@ -194,7 +206,7 @@ func run(ctx context.Context, _ []string) error {
 	}
 	defer sess.Close()
 
-	fmt.Println(apolloStatusOnlineResponse)
+	fmt.Println(delphiStatusOnlineResponse)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
