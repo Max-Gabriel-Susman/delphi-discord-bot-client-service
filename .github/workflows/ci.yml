@@ -3,67 +3,21 @@ name: ci
 on: 
   - push
 
-#env: 
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-jobs: 
-  cloudformation-linter:
-    runs-on: ubuntu-latest 
-    #env: 
-    steps: 
-      # it seems like we're going to eventually want to run these 
-      - name: Hello World
-        run: echo "linting cfn"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # okay, so we're going to need to determine how to get make on our builld image somehow 
-      #- name: Test
-      #  run: make test
-  
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.19
 
-  golang-linter:
-    runs-on: ubuntu-latest 
-    #env: 
-    steps: 
-      # it seems like we're going to eventually want to run these 
-      - name: Hello World
-        run: echo "linting golang"
+    - name: Install dependencies
+      run: go mod download
 
-      # okay, so we're going to need to determine how to get make on our builld image somehow 
-      #- name: Test
-      #  run: make test
-
-  test: 
-    runs-on: ubuntu-latest 
-    #env: 
-    steps: 
-      # it seems like we're going to eventually want to run these 
-      - name: Hello World
-        run: echo "testing golang"
-
-      # okay, so we're going to need to determine how to get make on our builld image somehow 
-      #- name: Test
-      #  run: make test
-
-
-  build: 
-    runs-on: ubuntu-latest 
-    #env: 
-    steps: 
-      # it seems like we're going to eventually want to run these 
-      - name: Hello World
-        run: echo "hello world"
-
-      # okay, so we're going to need to determine how to get make on our builld image somehow 
-      #- name: Test
-      #  run: make test
-
-  push: 
-    runs-on: ubuntu-latest 
-    #env: 
-    steps: 
-      # it seems like we're going to eventually want to run these 
-      - name: Hello World
-        run: echo "pushing image"
-
-      # okay, so we're going to need to determine how to get make on our builld image somehow 
-      #- name: Test
-      #  run: make test
+    - name: Run tests
+      run: go test ./...

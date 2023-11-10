@@ -24,7 +24,6 @@ const (
 var (
 	addr = flag.String("addr", "0.0.0.0:50054", "the address to connect to")
 	// addr = flag.String("addr", "172.17.0.2:50054", "the address to connect to")
-	name = flag.String("name", defaultName, "Name to greet")
 )
 
 // delphi list available inference
@@ -96,15 +95,17 @@ func InitiateDiscordBotSession(ctx context.Context) {
 			defer conn.Close()
 			c := pb.NewGreeterClient(conn)
 
-			// Contact the server and print out its response.
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			// Contact the server and print out its response.// Set a timeout for the context.
+			timeout := 60 * time.Second
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 			defer cancel()
-			r, err := c.SayHello(ctx, &pb.HelloRequest{Name: *name})
+			r, err := c.SayHello(ctx, &pb.HelloRequest{Name: m.Content})
 			if err != nil {
-				log.Fatalf("could not greet: %v", err)
+				// log.Fatalf("could not greet: %v", err)
+				fmt.Printf("could not greet: %v", err)
 			}
 			log.Printf("Greeting: %s", r.GetMessage())
-			s.ChannelMessageSend(m.ChannelID, rawPromptResponse)
+			s.ChannelMessageSend(m.ChannelID, r.Message)
 		} else {
 			if args[1] == statusArg {
 				// TODO: execute healthcheck on inference service
