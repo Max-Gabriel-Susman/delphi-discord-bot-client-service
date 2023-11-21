@@ -6,29 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	discord "github.com/Max-Gabriel-Susman/delphi-discord-bot-client-service/internal/user"
+	"github.com/Max-Gabriel-Susman/delphi-discord-bot-client-service/internal/discord"
 	"github.com/caarlos0/env/v6"
 	"github.com/pkg/errors"
 )
-
-/*
-	TODOs:
-		META:
-			* start a documentation diretcory
-			* start implementing testing coverage
-			* work more on readme
-			* abstract what we can to delphi-go-kit (e.g. logging, tracing, etc.)
-			* determine what logging tracing solutions I want to use long term(probably just something within aws honestly)
-			* refactor rootlevel protobuf/grpc logic into corresponding
-				internal directories
-			* refactor main.go to cmd/delphi-x-service/main.go
-			* clean up Make targets and keep them up to date
-			* abstract build logic execution into submodule delphi build-utils
-
-		MESA:
-			* we need to refactor the hell out of the discord bot logic, it is the smelliest dirtiest code this side of the mississippi
-			* we also need a cleaner way to integrate user and admin bot logic than the current implementation
-*/
 
 func main() {
 	ctx := context.Background()

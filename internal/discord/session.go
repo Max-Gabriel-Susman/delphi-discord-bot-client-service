@@ -1,4 +1,4 @@
-package user
+package discord
 
 import (
 	"context"
@@ -15,18 +15,13 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// TODO: I need to figure out a good way to mock this, probably going to need to dramatically refactor
-
 const (
 	defaultName = "world"
 )
 
 var (
 	addr = flag.String("addr", "0.0.0.0:50054", "the address to connect to")
-	// addr = flag.String("addr", "172.17.0.2:50054", "the address to connect to")
 )
-
-// delphi list available inference
 
 const (
 	delphiCommandPrefix = "delphi"
@@ -101,7 +96,6 @@ func InitiateDiscordBotSession(ctx context.Context) {
 			defer cancel()
 			r, err := c.SayHello(ctx, &pb.HelloRequest{Name: m.Content})
 			if err != nil {
-				// log.Fatalf("could not greet: %v", err)
 				fmt.Printf("could not greet: %v", err)
 			}
 			log.Printf("Greeting: %s", r.GetMessage())
@@ -153,3 +147,6 @@ func InitiateDiscordBotSession(ctx context.Context) {
 
 	fmt.Println(delphiStatusOnlineResponse)
 }
+
+// IsPrompt checks if the message is a prompt as opposed to a command
+func IsPrompt() {}

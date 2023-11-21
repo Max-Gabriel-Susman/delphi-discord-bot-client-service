@@ -1,4 +1,4 @@
-package user_test
+package discord_test
 
 import "testing"
 
